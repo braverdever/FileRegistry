@@ -1,0 +1,28 @@
+version: "3.8"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      IPFS_URL: http://ipfs:5001
+    depends_on:
+      - ipfs
+    restart: unless-stopped  # Optional: add a restart policy
+
+  ipfs:
+    image: ipfs/go-ipfs
+    ports:
+      - "5001:5001"
+      - "8080:8080"
+    environment:
+      IPFS_PROFILE: "server"
+    volumes:
+      - ipfs_data:/data/ipfs
+    restart: unless-stopped  # Optional: add a restart policy
+
+volumes:
+  ipfs_data:
