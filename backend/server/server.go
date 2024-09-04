@@ -3,6 +3,7 @@ package server
 import (
 	"file-registory/config"
 	"file-registory/contracts"
+	_ "file-registory/docs"
 
 	"github.com/gofiber/fiber/v2"
 	shell "github.com/ipfs/go-ipfs-api"
