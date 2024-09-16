@@ -22,8 +22,8 @@ func NewHandlerFiles(server *s.Server) *HandlerFiles {
 // @Tags files
 // @Accept multipart/form-data
 // @Produce json
-// @Param filePath query string true "File Path"
-// @Param file formData file true "File to Upload"
+// @Param filePath query string false "File Path"
+// @Param file formData file false "File to Upload"
 // @Success 200 {object} responses.Data
 // @Failure 400 {object} responses.Error
 // @Failure 404 {object} responses.Error
@@ -32,9 +32,13 @@ func NewHandlerFiles(server *s.Server) *HandlerFiles {
 func (h *HandlerFiles) SaveFile(c *fiber.Ctx) error {
 	filePath := c.Query("filePath")
 
+	if filePath == "" {
+		return responses.ErrorResponse(c, fiber.StatusBadRequest, "File path is required.")
+	}
+
 	file, err := c.FormFile("file")
 	if err != nil {
-		responses.ErrorResponse(c, fiber.StatusBadRequest, "Failed to upload file.")
+		return responses.ErrorResponse(c, fiber.StatusBadRequest, "Failed to upload file.")
 	}
 
 	src, err := file.Open()
@@ -61,7 +65,7 @@ func (h *HandlerFiles) SaveFile(c *fiber.Ctx) error {
 // @Tags files
 // @Accept json
 // @Produce json
-// @Param filePath query string true "File Path"
+// @Param filePath query string false "File Path"
 // @Success 200 {object} responses.Data
 // @Failure 400 {object} responses.Error
 // @Failure 404 {object} responses.Error
@@ -69,6 +73,10 @@ func (h *HandlerFiles) SaveFile(c *fiber.Ctx) error {
 // @Router /v1/files [get]
 func (h *HandlerFiles) GetFile(c *fiber.Ctx) error {
 	filePath := c.Query("filePath")
+
+	if filePath == "" {
+		return responses.ErrorResponse(c, fiber.StatusBadRequest, "File path is required.")
+	}
 
 	cid, err := h.Server.Contract.Get(filePath)
 	if err != nil {
